@@ -135,6 +135,111 @@ router.delete("/student-tracker/:id", requireStaff, async (req, res) => {
   }
 });
 
+router.put("/student-tracker/:id", requireStaff, async (req, res) => {
+  const { id } = req.params;
+
+  const {
+    name,
+    sg4_staff,
+    pronouns,
+    tshirt_size,
+    school_program,
+    email_address,
+    year_in_school,
+    areas_of_interest,
+    projects,
+    project_duration,
+    meeting_cadence,
+    conflicting_dates_times,
+    success_metric,
+    date_intro_email_sent,
+    attended_orientation,
+    read_community_guidelines,
+    signed_media_release,
+    sent_headshot,
+    completed_deliverables_raw,
+    survey_checkins_raw,
+    meeting_checkins_raw,
+    hours_worked_raw,
+    total_hours_per_student,
+    notes_raw,
+    source_file
+  } = req.body;
+
+  try {
+    const result = await pool.query(
+      `
+      UPDATE stg_ss1_student_tracker
+      SET
+        name = $1,
+        sg4_staff = $2,
+        pronouns = $3,
+        tshirt_size = $4,
+        school_program = $5,
+        email_address = $6,
+        year_in_school = $7,
+        areas_of_interest = $8,
+        projects = $9,
+        project_duration = $10,
+        meeting_cadence = $11,
+        conflicting_dates_times = $12,
+        success_metric = $13,
+        date_intro_email_sent = $14,
+        attended_orientation = $15,
+        read_community_guidelines = $16,
+        signed_media_release = $17,
+        sent_headshot = $18,
+        completed_deliverables_raw = $19,
+        survey_checkins_raw = $20,
+        meeting_checkins_raw = $21,
+        hours_worked_raw = $22,
+        total_hours_per_student = $23,
+        notes_raw = $24,
+        source_file = $25
+      WHERE stg_id = $26
+      RETURNING *;
+      `,
+      [
+        name,
+        sg4_staff,
+        pronouns,
+        tshirt_size,
+        school_program,
+        email_address,
+        year_in_school,
+        areas_of_interest,
+        projects,
+        project_duration,
+        meeting_cadence,
+        conflicting_dates_times,
+        success_metric,
+        date_intro_email_sent,
+        attended_orientation,
+        read_community_guidelines,
+        signed_media_release,
+        sent_headshot,
+        completed_deliverables_raw,
+        survey_checkins_raw,
+        meeting_checkins_raw,
+        hours_worked_raw,
+        total_hours_per_student,
+        notes_raw,
+        source_file,
+        id
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Student tracker record not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("STUDENT TRACKER UPDATE ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // =============================================
 // SS2 CAN Metrics
 // =============================================
